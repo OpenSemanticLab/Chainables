@@ -76,7 +76,7 @@ class ChainableObject(BaseModel):
                             if 'value' in value and 'meta' in value['value']:
                                 data_path = str(match.full_path) + "." + value['value']['meta']['jsonpath'] #value path relative to match path
                                 res.append(parse(data_path).find(self.dict())[0].value)
-                            print(data_path)
+                            #print(data_path)
                             #pprint(parse(data_path).find(self.content)[0].value)
                             
                 if (len(res) == 1): res = res[0]
@@ -130,7 +130,7 @@ class ChainableFunction(AbstractChainableFunction):
         if not param is None:
             param = {**self.param_default, **param}
         else: param = self.param_default
-        pprint(param)
+        #pprint(param)
         return param
     
     def apply(self, obj: ChainableObject, param: dict = None):
@@ -167,8 +167,11 @@ class ChainableFunction(AbstractChainableFunction):
 class TypeSafeChainableFunction(AbstractChainableFunction):
     class Param(BaseModel):
         debug: bool = False
+        class Config:
+            arbitrary_types_allowed = True #neccessary to allow e.g. np.array as type
     class Data(BaseModel):
-        pass
+        class Config:
+            arbitrary_types_allowed = True #neccessary to allow e.g. np.array as type
     class Meta(BaseModel):
         data_class: Optional[type(BaseModel)] = None  
         data_class_name: Optional[str] = ""  
