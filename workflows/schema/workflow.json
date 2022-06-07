@@ -32,14 +32,43 @@
                       "type": "object",
                       "oneOf": [
                         {
-                          "title": "StringValue",
-                          "type": "string"
+                          "properties": {
+                            "value": {
+                              "title": "Value",
+                              "type": "string"
+                            }
+                          },
+                          "title": "String",
+                          "type": "object"
                         },
                         {
-                          "title": "NumberValue",
-                          "type": "number"
+                          "properties": {
+                            "value": {
+                              "title": "Value",
+                              "type": "number"
+                            }
+                          },
+                          "title": "Number",
+                          "type": "object"
+                        },
+                        {
+                          "properties": {
+                            "match": {
+                              "title": "Match",
+                              "type": "string"
+                            },
+                            "value": {
+                              "title": "Value",
+                              "type": "string"
+                            }
+                          },
+                          "title": "JsonPath",
+                          "type": "object"
                         }
-                      ]
+                      ],
+                      "options": {
+                        "keep_oneof_values": false
+                      }
                     }
                   },
                   "title": "Parameter",
