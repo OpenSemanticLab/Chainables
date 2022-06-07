@@ -27,8 +27,19 @@
                       "type": "string"
                     },
                     "value": {
-                      "title": "Value",
-                      "type": "string"
+                      "properties": {},
+                      "title": "value",
+                      "type": "object",
+                      "oneOf": [
+                        {
+                          "title": "StringValue",
+                          "type": "string"
+                        },
+                        {
+                          "title": "NumberValue",
+                          "type": "number"
+                        }
+                      ]
                     }
                   },
                   "title": "Parameter",
