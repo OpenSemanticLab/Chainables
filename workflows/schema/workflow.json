@@ -1,0 +1,54 @@
+{
+  "properties": {
+    "entries": {
+      "items": {
+        "properties": {
+          "func": {
+            "properties": {
+              "name": {
+                "title": "Name",
+                "type": "string"
+              },
+              "uuid": {
+                "title": "UUID",
+                "type": "string"
+              }
+            },
+            "title": "Function",
+            "type": "object"
+          },
+          "mapping": {
+            "properties": {
+              "params": {
+                "items": {
+                  "properties": {
+                    "name": {
+                      "title": "Name",
+                      "type": "string"
+                    },
+                    "value": {
+                      "title": "Value",
+                      "type": "string"
+                    }
+                  },
+                  "title": "Parameter",
+                  "type": "object"
+                },
+                "title": "Parameters",
+                "type": "array"
+              }
+            },
+            "title": "Mapping",
+            "type": "object"
+          }
+        },
+        "title": "Entry",
+        "type": "object"
+      },
+      "title": "Entries",
+      "type": "array"
+    }
+  },
+  "title": "Workflow",
+  "type": "object"
+}
