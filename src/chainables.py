@@ -281,7 +281,7 @@ class AsyncChainableEventFunction(ChainableFunction):
         pass
         
     def func(self, param):
-        #asyncio.run(self.loop()) #for standard python
+        #asyncio.run(self.loop(param)) #for standard python
         loop = asyncio.get_running_loop() #for jupyter / ipython
         tsk = loop.create_task(self.loop(param))
         
