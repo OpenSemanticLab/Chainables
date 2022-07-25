@@ -38,7 +38,7 @@ class SinusVoltageGenerator(TypeSafeChainableFunction):
                                         param_class=__class__.Param, data_class=__class__.Data,
                                         meta_class=__class__.Meta)
 
-    def func(self, param):
+    def func(self, param: Param):
         sample_interval_s = 1.0 / param.sampling_frequency_Hz
         x = np.arange(0, param.sample_duration_s, sample_interval_s)
         y = np.sin(2 * np.pi * param.frequency_Hz * x)
@@ -75,7 +75,7 @@ class SignalAddition(TypeSafeChainableFunction):
                                         param_class=__class__.Param, data_class=__class__.Data,
                                         meta_class=__class__.Meta)
 
-    def func(self, param):
+    def func(self, param: Param):
         if (type(param.signals) == np.ndarray): param.signals = [param.signals]
         # TODO: Check zero len, dimensions, etc.
         signal = param.signals[0]
@@ -116,7 +116,7 @@ class BandpassFilter(TypeSafeChainableFunction):
                                         param_class=__class__.Param, data_class=__class__.Data,
                                         meta_class=__class__.Meta)
 
-    def func(self, param):
+    def func(self, param: Param):
         if (type(param.signals) == np.ndarray): param.signals = [param.signals]
         signals = []
         order = param.order
@@ -175,7 +175,7 @@ class SignalPlot(TypeSafeChainableFunction):
                                         param_class=__class__.Param, data_class=__class__.Data,
                                         meta_class=__class__.Meta)
 
-    def func(self, param):
+    def func(self, param: Param):
         fig = plt.figure()
 
         if (type(param.signals) == np.ndarray): param.signals = [param.signals]
@@ -252,5 +252,5 @@ obj = obj.apply({
              }
 })
 plt.show()
-#pprint(obj.dict())
+pprint(obj.dict())
 #input("Press Enter to continue...")
