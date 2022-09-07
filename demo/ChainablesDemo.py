@@ -1,7 +1,7 @@
 import sys
 sys.path.append('../')
 
-from src.chainables import Chainable, ChainableObject, ChainableFunction, TypeSafeChainableFunction
+from src.chainables import Chainable, ChainableObject, ChainableWorkflow, ChainableFunction, TypeSafeChainableFunction
 from typing import List, Optional, Any, Union
 from pprint import pprint
 
@@ -251,6 +251,27 @@ obj = obj.apply({
               'axis_units': {'match': {'meta': {'jsonpath': 'meta.*[?name = "signal1"]'}}, 'value': {'meta': {'jsonpath': 'column_units'}}},
              }
 })
-plt.show()
-pprint(obj.dict())
+#plt.show()
+#pprint(obj.dict())
 #input("Press Enter to continue...")
+
+
+signal1 = ChainableWorkflow(mappings = [{
+    'func': "Chainable.Signal.sinus_voltage_generator",
+    'param': {'debug': False, 'data_name': "signal1", 'frequency_Hz': 1, 'sample_duration_s': 10, 'sampling_frequency_Hz': 100, 'label': {'static': {'de':"Spannungssignal 1", 'en':"Voltage signal 1"}}}
+}])
+signal2 = signal1.override([{'param': {'data_name': "signal2", 'frequency_Hz': 5, 'label': {'static': {'de':"Spannungssignal 2", 'en':"Voltage signal 2"}}}}])
+plot = ChainableWorkflow(mappings = [{
+    'func': "Chainable.Signal.signal_plot",
+    'param': {'debug': False, 'data_name': "plot1",
+              'signals': {'match': {'meta': {'jsonpath': 'meta.*[?name =~ "signal"]'}}, 'value': {'data': {'jsonpath': 'signal'}}}, #default: traverse to data branch
+              'labels': {'match': {'meta': {'jsonpath': 'meta.*[?name =~ "signal"]'}}, 'value': {'meta': {'jsonpath': f'label.{lang}'}}}, #value path relative to match path
+              'axis_labels': {'match': {'meta': {'jsonpath': 'meta.*[?name = "signal1"]'}}, 'value': {'meta': {'jsonpath': f'column_labels.{lang}'}}},
+              'axis_units': {'match': {'meta': {'jsonpath': 'meta.*[?name = "signal1"]'}}, 'value': {'meta': {'jsonpath': 'column_units'}}},
+             }
+}])
+
+workflow = signal1 >> signal2 >> plot
+pprint(workflow.mappings)
+workflow.run()
+#(signal2 >> plot).run()

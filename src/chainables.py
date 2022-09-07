@@ -6,6 +6,7 @@ from abc import ABCMeta, abstractmethod
 from pydantic import BaseModel, validator
 from typing import List, Optional, Any, Union
 import datetime
+from copy import deepcopy
 
 import asyncio
 
@@ -108,6 +109,52 @@ class ChainableObject(BaseModel):
     def store_hist(self, hist: ChainableObjectHistory):
         #hist.func.obj = None #prevent circular objects
         self.hist.append(hist)
+        
+class ChainableWorkflow(BaseModel):
+    mappings: List[dict] = []
+    
+    def __rshift__(self, other: "ChainableWorkflow") -> "ChainableWorkflow":
+        """
+        Inspired from https://github.com/EMMC-ASBL/otelib/blob/fefcb79b51b35ddba485ae151fa65abb03dd8922/otelib/strategies/abc.py#L17
+        """
+        aggregated_mappings = ChainableWorkflow(mappings = self.mappings + other.mappings)
+        return aggregated_mappings
+ 
+    def _merge(a, b, path=None, update=True):
+        "http://stackoverflow.com/questions/7204805/python-dictionaries-of-dictionaries-merge"
+        "merges b into a"
+        if path is None: path = []
+        for key in b:
+            if key in a:
+                if isinstance(a[key], dict) and isinstance(b[key], dict):
+                    ChainableWorkflow._merge(a[key], b[key], path + [str(key)])
+                elif a[key] == b[key]:
+                    pass # same leaf value
+                elif isinstance(a[key], list) and isinstance(b[key], list):
+                    for idx, val in enumerate(b[key]):
+                        a[key][idx] = ChainableWorkflow._merge(a[key][idx], b[key][idx], path + [str(key), str(idx)], update=update)
+                elif update:
+                    a[key] = b[key]
+                else:
+                    raise Exception('Conflict at %s' % '.'.join(path + [str(key)]))
+            else:
+                a[key] = b[key]
+        return a
+    
+    def override(self, mappings, only_update = True) -> "ChainableWorkflow":
+        result = ChainableWorkflow(mappings = deepcopy(self.mappings))
+
+        for index, step in enumerate(mappings):
+            if only_update: 
+                ChainableWorkflow._merge(result.mappings[index], step)
+            else:
+                result.mappings[index] = {**result.mappings[index], **step} #will delete non-existing values
+        return result
+    
+    def run(self):
+        obj = ChainableObject()
+        for step in self.mappings:
+            obj = obj.apply(step)
         
 class AbstractChainableFunction(BaseModel):
     name: str
